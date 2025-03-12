@@ -6,7 +6,8 @@ export enum SquareState {
 
 export interface Square {
     state: SquareState,
-    hasMine: boolean
+    hasMine: boolean,
+    nearMines: number
 }
 
 export interface GameState {

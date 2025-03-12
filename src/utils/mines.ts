@@ -9,3 +9,25 @@ export function generateRandomPairs(x: number, y: number, n: number): [number, n
     
     return pairs;
 }
+
+
+export function getSurroundingPairs(x: number, y: number, maxX: number, maxY: number): [number, number][] {
+    const directions = [
+        [-1, -1], [0, -1], [1, -1],
+        [-1, 0],          [1, 0],
+        [-1, 1], [0, 1], [1, 1]
+    ];
+    
+    const result: [number, number][] = [];
+    
+    for (const [dx, dy] of directions) {
+        const newX = x + dx;
+        const newY = y + dy;
+        
+        if (newX >= 1 && newX <= maxX && newY >= 1 && newY <= maxY) {
+            result.push([newX, newY]);
+        }
+    }
+    
+    return result;
+}
