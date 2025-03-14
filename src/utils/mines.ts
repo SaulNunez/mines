@@ -54,6 +54,12 @@ export function getSurroundingPairs(x: number, y: number, maxX: number, maxY: nu
 }
 
 export function allMinesFlagged(board: Board): boolean {
+    const anyIncorrectFlag = board.some(row => 
+        row.some(cell => !cell.hasMine && cell.state === SquareState.FLAGGED)
+      );
+    
+      if (anyIncorrectFlag) return false;
+
     const allNonMineCellsRevealed = board.every(row => 
       row.every(cell => !cell.hasMine ? cell.state === SquareState.OPENED : true)
     );
