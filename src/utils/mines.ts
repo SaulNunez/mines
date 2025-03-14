@@ -24,7 +24,7 @@ export function getSurroundingPairs(x: number, y: number, maxX: number, maxY: nu
         const newX = x + dx;
         const newY = y + dy;
         
-        if (newX >= 1 && newX <= maxX && newY >= 1 && newY <= maxY) {
+        if (newX >= 0 && newX <= maxX && newY >= 0 && newY <= maxY) {
             result.push([newX, newY]);
         }
     }
