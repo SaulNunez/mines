@@ -9,7 +9,7 @@ const initialState: GameState = {
   }
 
 export default function rootReducer(state = initialState, action: GameAction) {
-    const newState = { board: state.board, gridSize: state.gridSize };
+    const newState = structuredClone(state);
 
     switch(action.type){
         case 'CLICK':
@@ -33,7 +33,9 @@ export default function rootReducer(state = initialState, action: GameAction) {
                     newState.board[n][m] = {
                         state:  SquareState.UNOPENED,
                         hasMine: false,
-                        nearMines: 0
+                        nearMines: 0,
+                        x: n,
+                        y: m
                     };
                 }
             }
@@ -46,7 +48,6 @@ export default function rootReducer(state = initialState, action: GameAction) {
                     newState.board[boardx][boardy].nearMines += 1;
                 });
             });
-            console.log(newState.board);
     }
     return newState;
 }
