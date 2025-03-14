@@ -14,5 +14,6 @@ export interface Square {
 
 export interface GameState {
     board: Square[][],
-    gridSize: number
+    gridSize: number,
+    gameEnded: boolean
 }

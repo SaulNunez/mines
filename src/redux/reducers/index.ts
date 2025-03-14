@@ -5,7 +5,8 @@ import { GameState, Square, SquareState } from './state_types';
 
 const initialState: GameState = {
     board: [],
-    gridSize: 0
+    gridSize: 0,
+    gameEnded: false,
   }
 
 export default function rootReducer(state = initialState, action: GameAction) {
@@ -19,6 +20,11 @@ export default function rootReducer(state = initialState, action: GameAction) {
                 revealEmptyCells(newState.board, action.index_x, action.index_y, newState.gridSize, newState.gridSize)
                     .forEach(([x, y]) => newState.board[x][y].state = SquareState.OPENED);
             }
+
+            if(newState.board[action.index_x][action.index_y].hasMine){
+                newState.gameEnded = true;
+            }
+
             break;
         case 'FLAG':
             newState.board[action.index_x][action.index_y].state = SquareState.FLAGGED;

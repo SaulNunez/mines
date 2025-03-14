@@ -7,6 +7,7 @@ import { Dispatch } from "@reduxjs/toolkit";
 
 export default function Mines(){
     const gridSize = useSelector<GameState, number>((state) => state.gridSize);
+    const gameEnded = useSelector<GameState, boolean>((state) => state.gameEnded);
     const grid = useSelector<GameState, Square[]>((state) => state.board.flat());
     const dispatch = useDispatch<Dispatch<GameAction>>();
 
@@ -28,6 +29,8 @@ export default function Mines(){
     }, []);
 
     return (
+        <View>
+        <Text style={styles.face}>{gameEnded? '😔' : '🙂'}</Text>
         <FlatList
             data={grid} 
             numColumns={9}
@@ -37,8 +40,18 @@ export default function Mines(){
                 return (
                     <Pressable 
                         disabled={item.state === SquareState.OPENED}
-                        onLongPress={() => dispatch({type: 'UNFLAG', index_x: item.x, index_y: item.y})}
-                        onPress={() => dispatch({type: 'CLICK', index_x: item.x, index_y: item.y})}>
+                        onLongPress={() => {
+                            if(item.state == SquareState.FLAGGED){
+                                dispatch({ type: 'UNFLAG', index_x: item.x, index_y: item.y });
+                            } else {
+                                dispatch({ type: 'FLAG', index_x: item.x, index_y: item.y });
+                            }
+                            
+                        }}
+                        onPress={() => {
+                            if(item.state == SquareState.FLAGGED) return;
+                            dispatch({ type: 'CLICK', index_x: item.x, index_y: item.y });
+                        }}>
                         <View style={[item.state === SquareState.OPENED? styles.itemDisabled : styles.item, 
                             { width: itemSize, height: itemSize }]}>
                             <Text style={styles.text}>{itemContent(item)}</Text>
@@ -49,6 +62,7 @@ export default function Mines(){
             }}
             scrollEnabled={false}
         />
+        </View>
     );
 }
 
@@ -69,9 +83,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#dddddd',
         alignItems: 'stretch'
     },
+    face: {
+        textAlign: 'center',
+        fontSize: 32,
+    },
     text: {
         textAlign: 'center',
         fontSize: 19,
-        color: '#4b4b4b'
+        color: '#4b4b4b',
+        fontWeight: 'bold'
     },
   });
