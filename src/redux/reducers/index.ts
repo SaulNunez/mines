@@ -1,5 +1,5 @@
 import { act } from 'react';
-import { generateRandomPairs, getSurroundingPairs } from '../../utils/mines';
+import { generateRandomPairs, getSurroundingPairs, revealEmptyCells } from '../../utils/mines';
 import { GameAction } from './action_types'
 import { GameState, Square, SquareState } from './state_types';
 
@@ -14,6 +14,11 @@ export default function rootReducer(state = initialState, action: GameAction) {
     switch(action.type){
         case 'CLICK':
             newState.board[action.index_x][action.index_y].state = SquareState.OPENED;
+
+            if(!newState.board[action.index_x][action.index_y].hasMine){
+                revealEmptyCells(newState.board, action.index_x, action.index_y, newState.gridSize, newState.gridSize)
+                    .forEach(([x, y]) => newState.board[x][y].state = SquareState.OPENED);
+            }
             break;
         case 'FLAG':
             newState.board[action.index_x][action.index_y].state = SquareState.FLAGGED;
