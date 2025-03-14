@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
-import { FlatList, View, Text, Pressable, StyleSheet } from "react-native";
+import { FlatList, View, Text, Pressable, StyleSheet, Button } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { GameState, Square, SquareState } from "../../redux/reducers/state_types";
+import { CurrentGameState, GameState, Square, SquareState } from "../../redux/reducers/state_types";
 import { GameAction } from "../../redux/reducers/action_types";
 import { Dispatch } from "@reduxjs/toolkit";
 
 export default function Mines(){
     const gridSize = useSelector<GameState, number>((state) => state.gridSize);
-    const gameEnded = useSelector<GameState, boolean>((state) => state.gameEnded);
+    const gameState = useSelector<GameState, CurrentGameState>((state) => state.gameState);
     const grid = useSelector<GameState, Square[]>((state) => state.board.flat());
     const dispatch = useDispatch<Dispatch<GameAction>>();
 
@@ -24,13 +24,29 @@ export default function Mines(){
         return "";
     }
 
+    const gameStateEmoji = (state: CurrentGameState) => {
+        switch(state){
+            case CurrentGameState.LOST:
+                return '😔';
+            case CurrentGameState.WON:
+                return '🤩';
+            case CurrentGameState.WIP:
+                return '🙂';
+        }
+    }
+
     useEffect(() => {
         dispatch({type: 'NEW_GAME', board_size: 9});
     }, []);
 
     return (
         <View>
-        <Text style={styles.face}>{gameEnded? '😔' : '🙂'}</Text>
+        <Button
+            onPress={() => {
+                dispatch({type: 'NEW_GAME', board_size: gridSize});
+            }}
+            title="New Game" />
+        <Text style={styles.face}>{gameStateEmoji(gameState)}</Text>
         <FlatList
             data={grid} 
             numColumns={9}
@@ -39,7 +55,7 @@ export default function Mines(){
         
                 return (
                     <Pressable 
-                        disabled={item.state === SquareState.OPENED}
+                        disabled={item.state === SquareState.OPENED || gameState !== CurrentGameState.WIP}
                         onLongPress={() => {
                             if(item.state == SquareState.FLAGGED){
                                 dispatch({ type: 'UNFLAG', index_x: item.x, index_y: item.y });
@@ -75,13 +91,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 6,
         borderBottomColor: '#e5e5e5',
         margin: 10,
-        alignItems: 'stretch'
+        alignItems: 'center'
     },
     itemDisabled: {
         margin: 10,
         borderRadius: 16,
         backgroundColor: '#dddddd',
-        alignItems: 'stretch'
+        alignItems: 'center'
     },
     face: {
         textAlign: 'center',

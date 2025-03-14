@@ -4,6 +4,12 @@ export enum SquareState {
     OPENED
 }
 
+export enum CurrentGameState {
+    WIP,
+    WON,
+    LOST
+}
+
 export interface Square {
     state: SquareState,
     hasMine: boolean,
@@ -12,8 +18,10 @@ export interface Square {
     y: number
 }
 
+export type Board = Square[][];
+
 export interface GameState {
-    board: Square[][],
+    board: Board,
     gridSize: number,
-    gameEnded: boolean
+    gameState: CurrentGameState
 }

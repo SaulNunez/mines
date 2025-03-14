@@ -1,4 +1,6 @@
-import { Square } from "../redux/reducers/state_types";
+import { Board, Square, SquareState } from "../redux/reducers/state_types";
+
+export type Coordinate = [number, number];
 
 export function generateRandomPairs(x: number, y: number, n: number): [number, number][] {
     const pairs: [number, number][] = [];
@@ -12,7 +14,7 @@ export function generateRandomPairs(x: number, y: number, n: number): [number, n
     return pairs;
 }
 
-export function revealEmptyCells(board: Square[][], x: number, y: number, maxX: number, maxY: number, visited: Set<string> = new Set()): [number, number][] {
+export function revealEmptyCells(board: Board, x: number, y: number, maxX: number, maxY: number, visited: Set<string> = new Set()): Coordinate[] {
     if (x < 0 || y < 0 || x >= maxX || y >= maxY) return [];
     if (visited.has(`${x},${y}`)) return [];
   
@@ -30,7 +32,7 @@ export function revealEmptyCells(board: Square[][], x: number, y: number, maxX: 
   }
 
 
-export function getSurroundingPairs(x: number, y: number, maxX: number, maxY: number): [number, number][] {
+export function getSurroundingPairs(x: number, y: number, maxX: number, maxY: number): Coordinate[] {
     const directions = [
         [-1, -1], [0, -1], [1, -1],
         [-1, 0],          [1, 0],
@@ -50,3 +52,17 @@ export function getSurroundingPairs(x: number, y: number, maxX: number, maxY: nu
     
     return result;
 }
+
+export function allMinesFlagged(board: Board): boolean {
+    const allNonMineCellsRevealed = board.every(row => 
+      row.every(cell => !cell.hasMine ? cell.state === SquareState.OPENED : true)
+    );
+    
+    return board.every(row => 
+      row.every(cell => 
+        !cell.hasMine || 
+        cell.state === SquareState.FLAGGED || 
+        (allNonMineCellsRevealed && cell.state === SquareState.UNOPENED)
+      )
+    );
+  }

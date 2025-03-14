@@ -1,12 +1,12 @@
 import { act } from 'react';
-import { generateRandomPairs, getSurroundingPairs, revealEmptyCells } from '../../utils/mines';
+import { allMinesFlagged, generateRandomPairs, getSurroundingPairs, revealEmptyCells } from '../../utils/mines';
 import { GameAction } from './action_types'
-import { GameState, Square, SquareState } from './state_types';
+import { CurrentGameState, GameState, Square, SquareState } from './state_types';
 
 const initialState: GameState = {
     board: [],
     gridSize: 0,
-    gameEnded: false,
+    gameState: CurrentGameState.WIP,
   }
 
 export default function rootReducer(state = initialState, action: GameAction) {
@@ -22,7 +22,7 @@ export default function rootReducer(state = initialState, action: GameAction) {
             }
 
             if(newState.board[action.index_x][action.index_y].hasMine){
-                newState.gameEnded = true;
+                newState.gameState = CurrentGameState.LOST;
 
                 for(let n = 0; n < newState.gridSize; n++){
                     for (let m = 0; m < newState.gridSize; m++){
@@ -33,15 +33,25 @@ export default function rootReducer(state = initialState, action: GameAction) {
                 }
             }
 
+            if(newState.gameState !== CurrentGameState.LOST && allMinesFlagged(newState.board)){
+                newState.gameState = CurrentGameState.WON;
+            }
+
             break;
         case 'FLAG':
             newState.board[action.index_x][action.index_y].state = SquareState.FLAGGED;
+
+            if(newState.gameState !== CurrentGameState.LOST && allMinesFlagged(newState.board)){
+                newState.gameState = CurrentGameState.WON;
+            }
+
             break;
         case 'UNFLAG':
             newState.board[action.index_x][action.index_y].state = SquareState.UNOPENED;
             break;
         case 'NEW_GAME':
             newState.gridSize = action.board_size;
+            newState.gameState = CurrentGameState.WIP;
 
             // Initializing board
             // Note that .fill() just sets an reference of the object
@@ -54,7 +64,7 @@ export default function rootReducer(state = initialState, action: GameAction) {
                         hasMine: false,
                         nearMines: 0,
                         x: n,
-                        y: m
+                        y: m,
                     };
                 }
             }
