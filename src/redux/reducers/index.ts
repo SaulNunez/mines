@@ -23,6 +23,14 @@ export default function rootReducer(state = initialState, action: GameAction) {
 
             if(newState.board[action.index_x][action.index_y].hasMine){
                 newState.gameEnded = true;
+
+                for(let n = 0; n < newState.gridSize; n++){
+                    for (let m = 0; m < newState.gridSize; m++){
+                        if(newState.board[n][m].hasMine){
+                            newState.board[n][m].state = SquareState.OPENED;
+                        }
+                    }
+                }
             }
 
             break;
