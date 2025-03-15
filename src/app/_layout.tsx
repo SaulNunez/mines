@@ -8,7 +8,11 @@ const store = configureAppStore();
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      <Stack>
+      <Stack screenOptions={{
+        headerTitleStyle : {
+          fontWeight: 'bold',
+        }
+      }}>
         <Stack.Screen name="/" options={{ title: "Mines" }} />
       </Stack>
     </Provider>
