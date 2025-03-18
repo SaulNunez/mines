@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { FlatList, View, Text, Pressable, StyleSheet, Button, Dimensions } from "react-native";
+import { FlatList, View, Text, Pressable, StyleSheet, Button, Dimensions, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { CurrentGameState, GameState, Square, SquareState } from "../redux/reducers/state_types";
 import { GameAction } from "../redux/reducers/action_types";
@@ -54,6 +54,7 @@ export default function Mines() {
         }
         if (gameState === CurrentGameState.WON) {
             //playWin();
+            Alert.alert("Congrats!", "You win!");
         }
     }, [gameState]);
 
